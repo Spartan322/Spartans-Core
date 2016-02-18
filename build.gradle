@@ -1,0 +1,85 @@
+buildscript {
+	repositories {
+		mavenCentral()
+		maven {
+			name = "forge"
+			url = "http://files.minecraftforge.net/maven"
+		}
+
+		maven {
+			name = "sonatype"
+			url = "https://oss.sonatype.org/content/repositories/snapshots/"
+		}
+	}
+
+	dependencies {
+		classpath "net.minecraftforge.gradle:ForgeGradle:1.2-SNAPSHOT"
+	}
+}
+
+apply plugin: 'forge'
+
+// Looks in mod.properties file
+ext.configFile = file "mod.properties"
+configFile.withReader {
+	// Load config. Can be referenced as config
+	def prop = new Properties()
+	prop.load(it)
+	ext.config = new ConfigSlurper().parse prop
+}
+
+version = config.mcversion+"-"+config.forgeversion+"F-"+config.modversion // "0.2"
+group= "com.spartan322.core" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
+archivesBaseName = config.archiveName
+
+minecraft {
+    version = config.mcversion+"-"+config.forgeversion // "1.8-11.14.3.1450"
+    runDir = "run"
+    mappings = config.mappings
+}
+
+sourceSets {
+	main {
+		java { srcDir 'src/java' }
+		resources { srcDir 'src/resources' include('**') }
+	}
+}
+
+processResources
+{
+	// this will ensure that this task is redone when the versions change.
+	inputs.property "version", project.version
+	inputs.property "mcversion", project.minecraft.version
+
+	from(sourceSets.main.resources.srcDirs) {
+		include 'mcmod.info'
+		// replace version and mcversion
+		expand 'version':config.modversion, 'mcversion':config.mcversion
+	}
+}
+
+task deobfJar(type: Jar) {
+	from sourceSets.main.output
+	classifier = 'deobf'
+	destinationDir = file 'releases/API'
+}
+
+task sourceJar(type: Jar) {
+	from sourceSets.main.allSource
+	classifier = 'sources'
+	destinationDir = file 'releases/API'
+}
+
+jar {
+	//Place jar into distribution folder
+	destinationDir = file 'releases'
+	//Keep the jar as clean as possible
+	includeEmptyDirs = false
+	duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}
+
+artifacts {
+	archives deobfJar
+	archives sourceJar
+	archives jar
+}

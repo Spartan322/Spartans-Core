@@ -1,0 +1,20 @@
+# Ignore everything
+*/*
+*.*
+
+# Except Source, Releases, .gitignores files, gradle, .github, README.md, LICENSE, .gradle files, property files, gradlew, and gradlew.bat
+!src/*
+!releases/*
+!.gitignore
+!*/.gitignore
+!gradle/*
+!.github/*
+!README.md
+!LICENSE
+!*.gradle
+!*.properties
+!gradlew
+!gradlew.bat
+
+# If a file should be kept, make an empty .keep file
+!*.keep
