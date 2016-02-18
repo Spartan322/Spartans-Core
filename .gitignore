@@ -16,5 +16,5 @@
 !gradlew
 !gradlew.bat
 
-# If a file should be kept, make an empty .keep file
+# .keep for things which should be kept which aren't listed here
 !*.keep
